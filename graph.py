@@ -55,6 +55,7 @@ class Graph:
         ignored. Returns 1 if there was already an edge between
         start and end, otherwise returns 0.
         """
+        # Does this handle self-edges? Yes.
         exists_out = self._add_edge(self.outedges, start, end)
         exists_in  = self._add_edge(self.inedges, end, start)
         assert(exists_out == exists_in)
@@ -85,6 +86,7 @@ class Graph:
         """Removes an edge from start to end. If there is no edge from
         start to end, raises a KeyError.
         """
+        # Does this handle self-edges? Yes.
         self._del_edge(self.outedges, start, end)
         self._del_edge(self.inedges, end, start)
 
@@ -133,6 +135,8 @@ class Graph:
 
             line = infile.readline()
 
+        print("outedges={}".format(self.outedges))
+        print("inedges={}".format(self.inedges))
         return
 
     def to_file(self, outfile):
@@ -204,29 +208,29 @@ class Graph:
             except KeyError:
                 inedges = []
             print("\ncandidate: {}".format(node))
+            print("\toutedges={}".format(outedges))
+            print("\tinedges={}".format(inedges))
 
             if len(outedges) == 1 and len(inedges) == 1:
                 nbr_in  = inedges[0]
                 nbr_out = outedges[0]
                 self.del_directed_edge(nbr_in, node)
-                self.del_directed_edge(node, nbr_out)
-                if nbr_in != nbr_out:
-                    already_connected = self.add_directed_edge(nbr_in, nbr_out)
-                    print(("removed {0}->{1} and {1}->{2} and directly "
-                        "connected {0}->{2}; already_connected={3}").format(
-                        nbr_in, node, nbr_out, already_connected))
+                if node == nbr_out:
+                    # Isolated self-cycles: don't try to delete the edge
+                    # a second time, and don't try to add back a new edge.
+                    print("Removed self-cycle {}->{}".format(nbr_in, node))
+                    pass
                 else:
-                    # If node has exactly one incoming + one outgoing edge,
-                    # and both of those edges are incoming / outgoing from
-                    # the same node, then don't connect that node to itself -
-                    # we want to eliminate this two-node cycle! It doesn't
-                    # hurt to leave that neighbor node in the candidate
-                    # queue.
-                    already_connected = False
-                    print(("Removed two-node cycle {}->{}->{}").format(
-                        nbr_in, node, nbr_out))
-                
-                #if already_connected:
+                    self.del_directed_edge(node, nbr_out)
+                    already_connected = self.add_directed_edge(nbr_in, nbr_out)
+                    print(("Removed {0}->{1} and {1}->{2} and directly "
+                        "connected {0}->{2}").format(nbr_in, node, nbr_out))
+                    if already_connected:
+                        candidates.append(nbr_in)
+                        candidates.append(nbr_out)
+                        print(("{0}->{1} already existed, so added {0} and "
+                            "{1} to candidates list again").format(
+                            nbr_in, nbr_out))
 
             print("outedges={}".format(self.outedges))
             print("inedges={}".format(self.inedges))
