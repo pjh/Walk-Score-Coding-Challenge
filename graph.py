@@ -123,8 +123,44 @@ class Graph:
         return
 
     def reduce_graph(self):
+        """'Reduces' the graph by removing nodes that have exactly
+        one input and one output edge and directly connecting their
+        neighbors.
+        """
 
-        self._del_edge(self.outedges, 'A', 'D')
+        # Principles from example input+output files:
+        #   1) When "killing" a node, if an edge already exists between
+        #      its neighbors, don't add another one.
+        #   2) If there is a two-node cycle that is "isolated" so that each
+        #      node has exactly one input edge and one output edge, then
+        #      kill both nodes.
+        # Other "edge" cases to think about:
+        #   Self edges
+        #   Disconnected components?
+        #   ...
+        #
+        # Given the graph representation, we can immediately search for
+        # nodes with exactly one incoming edge and one outgoing edge,
+        # and we know that they will be killed. Most of the time, when
+        # we directly connect the neighbors, the number of incoming +
+        # outgoing edges for those neighbor nodes does not change. The
+        # trickiness comes when the neighbors of the killed node are
+        # *already* connected by an edge - in this case, the number of
+        # incoming or outgoing edges for these two neighbors has
+        # decremented, so each of these nodes must be checked again!
+        #
+        # Sketch of algorithm:
+        #   Get list of "candidate" nodes in any order.
+        #   While queue of candidate nodes is not empty:
+        #     Check node at head of queue: does it have exactly one input
+        #     edge and one output edge? If so:
+        #       Kill the node and connect its neighbors directly. If the
+        #       neighbors were already connected, then append both
+        #       neighbors to the end of the candidate queue. Take care
+        #       with cycles...
+        #   Once the candidate queue is empty, we are done: we have checked
+        #   all of the nodes at least once, and we double-checked nodes
+        #   whose input/output edge count changed.
 
         return
 
