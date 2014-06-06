@@ -4,6 +4,7 @@
 # nodes with exactly one input and one output edge.
 # Copyright (c) 2014 Peter Hornyack
 
+from graph import Graph
 import argparse
 import sys
 
@@ -27,6 +28,14 @@ def build_arg_parser():
 if __name__ == '__main__':
     parser = build_arg_parser()
     parser.parse_args(sys.argv[1:])
+
+    # Use a separate class for Graph - its internal representation will
+    # be just a dict, but class is useful if we later want to add any
+    # metadata etc.
+    graph = Graph()
+    graph.from_file(sys.stdin)
+    graph.reduce_graph()
+    graph.to_file(sys.stdout)
 
     sys.exit(0)
 else:
