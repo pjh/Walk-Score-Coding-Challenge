@@ -47,7 +47,7 @@ class Graph:
     def __init__(self):
         return
 
-    def add_edge(self, edgemap, start, end):
+    def _add_edge(self, edgemap, start, end):
         """Adds an edge from start to end in the specified edge map.
         Duplicate edges are ignored.
         """
@@ -63,7 +63,7 @@ class Graph:
 
         return
 
-    def del_edge(self, edgemap, start, end):
+    def _del_edge(self, edgemap, start, end):
         """Removes an edge from start to end in the specified edge map.
         If there is no edge from start to end, a KeyError will be raised.
         """
