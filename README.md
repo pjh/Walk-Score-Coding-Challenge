@@ -1,5 +1,10 @@
+Notes from pjh
+--------------
+
+This code is written in Python3, rather than Python 2.x - I hope this is acceptable for the coding challenge.
+
 Welcome to the Walk Score coding challenge!
-===========================================
+-------------------------------------------
 
 The files in the input directory represent directed graphs.  Each line
 contains two tab-separated node IDs, and defines an edge.  We want to
@@ -11,7 +16,7 @@ may answer some of your questions about *ahem* edge cases.  Your challenge is
 to write a program that can produce correct output for the rest!
 
 Guidelines:
-===========
+-----------
 
 1. JavaScript or Python
 2. Read from STDIN, write to STDOUT
@@ -19,7 +24,7 @@ Guidelines:
 4. Have fun!
 
 How to submit:
-==============
+--------------
 
 Create patch files for your changes (`git format-patch origin/master..HEAD`)
 and attach them in an email to jobs@walkscore.com!
