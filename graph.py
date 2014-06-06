@@ -50,6 +50,16 @@ class Graph:
     def __init__(self):
         return
 
+    def add_directed_edge(self, start, end):
+        """Adds an edge from start to end. Duplicate edges are
+        ignored. Returns 1 if there was already an edge between
+        start and end, otherwise returns 0.
+        """
+        exists_out = self._add_edge(self.outedges, start, end)
+        exists_in  = self._add_edge(self.inedges, end, start)
+        assert(exists_out == exists_in)
+        return exists_out
+
     def _add_edge(self, edgemap, start, end):
         """Adds an edge from start to end in the specified edge map.
         Duplicate edges are ignored. Returns 1 if there was already
@@ -71,9 +81,16 @@ class Graph:
         edgelist.append(end)
         return 0
 
+    def del_directed_edge(self, start, end):
+        """Removes an edge from start to end. If there is no edge from
+        start to end, raises a KeyError.
+        """
+        self._del_edge(self.outedges, start, end)
+        self._del_edge(self.inedges, end, start)
+
     def _del_edge(self, edgemap, start, end):
         """Removes an edge from start to end in the specified edge map.
-        If there is no edge from start to end, a KeyError will be raised.
+        If there is no edge from start to end, raises a KeyError.
         """
 
         try:
@@ -88,7 +105,7 @@ class Graph:
         edgelist.pop(idx)
         if len(edgelist) == 0:
             edgemap.pop(start)
-            print("Removed entry for {} from edgemap".format(start))
+            #print("Removed entry for {} from edgemap".format(start))
 
         return
 
@@ -112,8 +129,7 @@ class Graph:
             # Note: we don't add empty lists to the outedges and
             # inedges maps here, so nodes that have only input edges
             # or only output edges may not be found in one of the maps!
-            self._add_edge(self.outedges, start, end)
-            self._add_edge(self.inedges, end, start)
+            self.add_directed_edge(start, end)
 
             line = infile.readline()
 
@@ -187,25 +203,25 @@ class Graph:
                 inedges = self.inedges[node]
             except KeyError:
                 inedges = []
+            print("candidate: {}".format(node))
             #print("{}: outedges={}, inedges={}".format(node, outedges,
             #   inedges))
 
             if len(outedges) == 1 and len(inedges) == 1:
                 nbr_in  = inedges[0]
                 nbr_out = outedges[0]
-                self._del_edge(self.outedges, nbr_in, node)
-                self._del_edge(self.inedges, node, nbr_in)
-                self._del_edge(self.outedges, node, nbr_out)
-                self._del_edge(self.inedges, nbr_out, node)
-                #already_connected  = self._add_edge(self.outedges,
-                #                                   nbr_in, nbr_out)
-                #already_connected2 = self._add_edge(self.inedges,
-                #                                   nbr_out, nbr_in)
-                #print(("removed {}->{} and {}->{} and directly "
-                #    "connected {}->{}").format(nbr_in, node, node, ))
-                #assert(already_connected == already_connected2)
-                #
+                self.del_directed_edge(nbr_in, node)
+                self.del_directed_edge(node, nbr_out)
+                already_connected = self.add_directed_edge(nbr_in, nbr_out)
+
+                print(("removed {0}->{1} and {1}->{2} and directly "
+                    "connected {0}->{2}; already_connected={3}").format(
+                    nbr_in, node, nbr_out, already_connected))
+                
                 #if already_connected:
+
+            print("outedges={}".format(self.outedges))
+            print("inedges={}".format(self.inedges))
 
         return
 
