@@ -1,7 +1,7 @@
 Notes from pjh
 --------------
 
-This code is written in Python3, rather than Python 2.x - I hope this is acceptable for the coding challenge.
+This code is written in Python3, rather than Python 2.x - I hope this is acceptable for the coding challenge!
 
 Welcome to the Walk Score coding challenge!
 -------------------------------------------
