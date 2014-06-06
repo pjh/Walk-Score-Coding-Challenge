@@ -203,20 +203,28 @@ class Graph:
                 inedges = self.inedges[node]
             except KeyError:
                 inedges = []
-            print("candidate: {}".format(node))
-            #print("{}: outedges={}, inedges={}".format(node, outedges,
-            #   inedges))
+            print("\ncandidate: {}".format(node))
 
             if len(outedges) == 1 and len(inedges) == 1:
                 nbr_in  = inedges[0]
                 nbr_out = outedges[0]
                 self.del_directed_edge(nbr_in, node)
                 self.del_directed_edge(node, nbr_out)
-                already_connected = self.add_directed_edge(nbr_in, nbr_out)
-
-                print(("removed {0}->{1} and {1}->{2} and directly "
-                    "connected {0}->{2}; already_connected={3}").format(
-                    nbr_in, node, nbr_out, already_connected))
+                if nbr_in != nbr_out:
+                    already_connected = self.add_directed_edge(nbr_in, nbr_out)
+                    print(("removed {0}->{1} and {1}->{2} and directly "
+                        "connected {0}->{2}; already_connected={3}").format(
+                        nbr_in, node, nbr_out, already_connected))
+                else:
+                    # If node has exactly one incoming + one outgoing edge,
+                    # and both of those edges are incoming / outgoing from
+                    # the same node, then don't connect that node to itself -
+                    # we want to eliminate this two-node cycle! It doesn't
+                    # hurt to leave that neighbor node in the candidate
+                    # queue.
+                    already_connected = False
+                    print(("Removed two-node cycle {}->{}->{}").format(
+                        nbr_in, node, nbr_out))
                 
                 #if already_connected:
 
