@@ -92,15 +92,16 @@ class Graph:
 
             line = infile.readline()
 
-        print("outedges: {}".format(self.outedges))
-        print("inedges: {}".format(self.inedges))
-
         return
 
     def to_file(self, outfile):
         """Writes edges from the outgoing edge map to the open
         writeable file @outfile.
         """
+
+        for (start, edgelist) in self.outedges.items():
+            for end in edgelist:
+                outfile.write("{}\t{}\n".format(start, end))
 
         return
 
