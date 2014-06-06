@@ -52,7 +52,8 @@ class Graph:
 
     def _add_edge(self, edgemap, start, end):
         """Adds an edge from start to end in the specified edge map.
-        Duplicate edges are ignored.
+        Duplicate edges are ignored. Returns 1 if there was already
+        an edge between start and end, otherwise returns 0.
         """
 
         try:
@@ -65,10 +66,10 @@ class Graph:
         # future, if tests to check for edge presence or edge deletions
         # are frequent operations, then a sorted list or BST may be
         # more appropriate.
-        if end not in edgelist:
-            edgelist.append(end)
-
-        return
+        if end in edgelist:
+            return 1
+        edgelist.append(end)
+        return 0
 
     def _del_edge(self, edgemap, start, end):
         """Removes an edge from start to end in the specified edge map.
@@ -85,6 +86,9 @@ class Graph:
             raise KeyError("no edge from {} -> {}".format(start, end))
 
         edgelist.pop(idx)
+        if len(edgelist) == 0:
+            edgemap.pop(start)
+            print("Removed entry for {} from edgemap".format(start))
 
         return
 
@@ -185,6 +189,23 @@ class Graph:
                 inedges = []
             #print("{}: outedges={}, inedges={}".format(node, outedges,
             #   inedges))
+
+            if len(outedges) == 1 and len(inedges) == 1:
+                nbr_in  = inedges[0]
+                nbr_out = outedges[0]
+                self._del_edge(self.outedges, nbr_in, node)
+                self._del_edge(self.inedges, node, nbr_in)
+                self._del_edge(self.outedges, node, nbr_out)
+                self._del_edge(self.inedges, nbr_out, node)
+                #already_connected  = self._add_edge(self.outedges,
+                #                                   nbr_in, nbr_out)
+                #already_connected2 = self._add_edge(self.inedges,
+                #                                   nbr_out, nbr_in)
+                #print(("removed {}->{} and {}->{} and directly "
+                #    "connected {}->{}").format(nbr_in, node, node, ))
+                #assert(already_connected == already_connected2)
+                #
+                #if already_connected:
 
         return
 
