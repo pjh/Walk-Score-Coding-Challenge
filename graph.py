@@ -26,6 +26,8 @@ import re
 # seems like the reduce algorithm may be faster if we keep both maps.
 #
 # Future enhancements:
+#   Possibly use a sorted list or binary tree for the edge lists, if
+#     edge tests or deletions are common.
 #   Create a separate class for the edge lists as well?
 #   Define better exceptions.
 
@@ -56,10 +58,14 @@ class Graph:
             edgelist = edgemap[start]
         except KeyError:
             edgelist = list()
+            edgemap[start] = edgelist
 
+        # For now, just use a basic list for the edge lists. In the
+        # future, if tests to check for edge presence or edge deletions
+        # are frequent operations, then a sorted list or BST may be
+        # more appropriate.
         if end not in edgelist:
             edgelist.append(end)
-            edgemap[start] = edgelist
 
         return
 
@@ -67,6 +73,17 @@ class Graph:
         """Removes an edge from start to end in the specified edge map.
         If there is no edge from start to end, a KeyError will be raised.
         """
+
+        try:
+            edgelist = edgemap[start]
+        except KeyError:
+            edgelist = []
+        try:
+            idx = edgelist.index(end)
+        except ValueError:
+            raise KeyError("no edge from {} -> {}".format(start, end))
+
+        edgelist.pop(idx)
 
         return
 
@@ -87,8 +104,8 @@ class Graph:
             start = edge_match.group('start')
             end = edge_match.group('end')
 
-            self.add_edge(self.outedges, start, end)
-            self.add_edge(self.inedges, end, start)
+            self._add_edge(self.outedges, start, end)
+            self._add_edge(self.inedges, end, start)
 
             line = infile.readline()
 
@@ -106,6 +123,8 @@ class Graph:
         return
 
     def reduce_graph(self):
+
+        self._del_edge(self.outedges, 'A', 'D')
 
         return
 
