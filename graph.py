@@ -107,7 +107,6 @@ class Graph:
         edgelist.pop(idx)
         if len(edgelist) == 0:
             edgemap.pop(start)
-            #print("Removed entry for {} from edgemap".format(start))
 
         return
 
@@ -135,8 +134,6 @@ class Graph:
 
             line = infile.readline()
 
-        print("outedges={}".format(self.outedges))
-        print("inedges={}".format(self.inedges))
         return
 
     def to_file(self, outfile):
@@ -207,9 +204,6 @@ class Graph:
                 inedges = self.inedges[node]
             except KeyError:
                 inedges = []
-            print("\ncandidate: {}".format(node))
-            print("\toutedges={}".format(outedges))
-            print("\tinedges={}".format(inedges))
 
             if len(outedges) == 1 and len(inedges) == 1:
                 nbr_in  = inedges[0]
@@ -218,22 +212,13 @@ class Graph:
                 if node == nbr_out:
                     # Isolated self-cycles: don't try to delete the edge
                     # a second time, and don't try to add back a new edge.
-                    print("Removed self-cycle {}->{}".format(nbr_in, node))
                     pass
                 else:
                     self.del_directed_edge(node, nbr_out)
                     already_connected = self.add_directed_edge(nbr_in, nbr_out)
-                    print(("Removed {0}->{1} and {1}->{2} and directly "
-                        "connected {0}->{2}").format(nbr_in, node, nbr_out))
                     if already_connected:
                         candidates.append(nbr_in)
                         candidates.append(nbr_out)
-                        print(("{0}->{1} already existed, so added {0} and "
-                            "{1} to candidates list again").format(
-                            nbr_in, nbr_out))
-
-            print("outedges={}".format(self.outedges))
-            print("inedges={}".format(self.inedges))
 
         return
 
