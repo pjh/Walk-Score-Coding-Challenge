@@ -3,6 +3,7 @@
 # Copyright (c) 2014 Peter Hornyack
 
 import re
+from collections import deque
 
 # How should we represent the graph once we have read in the edge list?
 # There are two basic structures for representing a graph: an adjacency
@@ -104,6 +105,9 @@ class Graph:
             start = edge_match.group('start')
             end = edge_match.group('end')
 
+            # Note: we don't add empty lists to the outedges and
+            # inedges maps here, so nodes that have only input edges
+            # or only output edges may not be found in one of the maps!
             self._add_edge(self.outedges, start, end)
             self._add_edge(self.inedges, end, start)
 
@@ -161,6 +165,26 @@ class Graph:
         #   Once the candidate queue is empty, we are done: we have checked
         #   all of the nodes at least once, and we double-checked nodes
         #   whose input/output edge count changed.
+
+        # Use a deque rather than a list for candidates: supports faster
+        # pops / appends at both ends. Note that this list will not
+        # actually include nodes that only have input edges; this is
+        # ok (and is in fact a bit of an optimization), because they will
+        # definitely not be candidates for deletion.
+        candidates = deque(self.outedges.keys())
+
+        while len(candidates) > 0:
+            node = candidates.popleft()
+            try:
+                outedges = self.outedges[node]
+            except KeyError:
+                outedges = []
+            try:
+                inedges = self.inedges[node]
+            except KeyError:
+                inedges = []
+            #print("{}: outedges={}, inedges={}".format(node, outedges,
+            #   inedges))
 
         return
 
